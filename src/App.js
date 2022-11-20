@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 // import Particles from 'react-particles-js';
 import ParticlesBg from 'particles-bg'
+import ParticleConfig from './particle';
 import Clarifai from 'clarifai';
 // import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Navigation from './components/Navigation/Navigation';
@@ -125,7 +126,7 @@ class App extends Component {
     const { onRouteChange, onInputChange, onButtonSubmit } = this;
     return (
       <div className="App">
-        <ParticlesBg className='particles' type="circle" bg={true} />
+        <ParticlesBg params={ParticleConfig} className='particles' bg={true} />
         <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
         { route === 'home'
           ? 

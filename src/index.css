@@ -2,7 +2,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Courier New", Courier, monospace;
-  background: linear-gradient(89deg, #FF5EDF 0%, #04C8DE 100%); /* w3c */
+  background: linear-gradient(95.2deg,
+        rgba(173, 252, 234, 1) 26.8%,
+        rgba(192, 229, 246, 1) 64%);
 }
 
 button {
