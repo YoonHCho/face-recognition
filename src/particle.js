@@ -1,26 +1,26 @@
 const ParticleConfig =
   {
     autoPlay: true,
-    background: {
-      color: {
-        value: "#000"
-      },
-      image: "",
-      position: "",
-      repeat: "",
-      size: "",
-      opacity: 1
-    },
-    backgroundMask: {
-      composite: "destination-out",
-      cover: {
-        color: {
-          value: "#fff"
-        },
-        opacity: 1
-      },
-      enable: false
-    },
+    // background: {
+    //   color: {
+    //     value: "#000"
+    //   },
+    //   image: "",
+    //   position: "",
+    //   repeat: "",
+    //   size: "",
+    //   opacity: 1
+    // },
+    // backgroundMask: {
+    //   composite: "destination-out",
+    //   cover: {
+    //     color: {
+    //       value: "#fff"
+    //     },
+    //     opacity: 1
+    //   },
+    //   enable: false
+    // },
     fullScreen: {
       enable: true,
       zIndex: -1
@@ -117,7 +117,7 @@ const ParticleConfig =
         },
         slow: {
           factor: 3,
-          radius: 200
+          radius: 100
         },
         trail: {
           delay: 1,
@@ -275,7 +275,7 @@ const ParticleConfig =
         },
         random: false,
         size: true,
-        speed: 5,
+        speed: 1,
         spin: {
           acceleration: 0,
           enable: false
@@ -294,8 +294,8 @@ const ParticleConfig =
       number: {
         density: {
           enable: false,
-          area: 800,
-          factor: 1000
+          area: 300,
+          factor: 500
         },
         limit: 0,
         value: 0
@@ -312,7 +312,7 @@ const ParticleConfig =
         animation: {
           count: 0,
           enable: false,
-          speed: 2,
+          speed: 1,
           decay: 0,
           sync: false,
           destroy: "none",
@@ -347,7 +347,7 @@ const ParticleConfig =
         animation: {
           count: 0,
           enable: false,
-          speed: 5,
+          speed: 1,
           decay: 0,
           sync: false,
           destroy: "none",

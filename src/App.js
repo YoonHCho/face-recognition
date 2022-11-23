@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import Particles from 'react-particles-js';
 import ParticlesBg from 'particles-bg'
-import ParticleConfig from './particle';
+// import ParticleConfig from './particle';
 import Clarifai from 'clarifai';
 // import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Navigation from './components/Navigation/Navigation';
@@ -40,8 +40,25 @@ class App extends Component {
       box: {},
       route: 'signin',
       isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      }
     }
   }
+
+  loadUser = data => {
+    this.setState({ user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
+  };
 
   calculateFaceLocation = data => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -108,7 +125,20 @@ class App extends Component {
         .predict(
           Clarifai.FACE_DETECT_MODEL,
           this.state.input)
-        .then( response => this.displayFaceBox(this.calculateFaceLocation(response)))
+        .then( response => {
+          fetch('http://localhost:3000/image', {
+            method: 'put',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              id: this.state.user.id
+            })
+          })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {entries: count}))
+          })
+          this.displayFaceBox(this.calculateFaceLocation(response))
+        })
         .catch(err => console.log(err));
   }
 
@@ -122,17 +152,17 @@ class App extends Component {
   }
 
   render() {
-    const { isSignedIn, route, imageURL, box } = this.state;
-    const { onRouteChange, onInputChange, onButtonSubmit } = this;
+    const { isSignedIn, route, imageURL, box, user } = this.state;
+    const { onRouteChange, onInputChange, onButtonSubmit, loadUser } = this;
     return (
       <div className="App">
-        <ParticlesBg params={ParticleConfig} className='particles' bg={true} />
+        <ParticlesBg type='circle' className='particles' bg={true} />
         <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
         { route === 'home'
           ? 
             <>
               <Logo />
-              <Rank />
+              <Rank name={user.name} entries={user.entries} />
               <ImageLinkForm
                 onInputChange={onInputChange}
                 onButtonSubmit={onButtonSubmit}
@@ -141,8 +171,8 @@ class App extends Component {
             </>
           : (
             route === 'signin' || route === 'signout'
-            ? <SignIn onRouteChange={onRouteChange} />
-            : <Register onRouteChange={onRouteChange} />
+            ? <SignIn onRouteChange={onRouteChange} loadUser={loadUser} />
+            : <Register onRouteChange={onRouteChange} loadUser={loadUser} />
           ) 
           
         }
