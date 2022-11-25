@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-// import Particles from 'react-particles-js';
 import ParticlesBg from 'particles-bg'
-// import ParticleConfig from './particle';
 import Clarifai from 'clarifai';
-// import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Navigation from './components/Navigation/Navigation';
 import FaceRecognition from './components/faceRecognition/FaceRecognition';
 import SignIn from './components/signIn/SignIn';
@@ -18,28 +15,16 @@ const app = new Clarifai.App({
  apiKey: 'b026f34cc94c4a8caa3f47a30a32b893'
 });
 
-// No Longer need this. Updated to particles-bg
-// const particlesOptions = {
-//   particles: {
-//     number: {
-//       value: 30,
-//       density: {
-//         enable: true,
-//         value_area: 800
-//       }
-//     }
-//   }
-// }
-
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       input: '',
       imageURL: '',
       box: {},
       route: 'signin',
       isSignedIn: false,
+      setHeight: 0,
       user: {
         id: '',
         name: '',
@@ -65,6 +50,7 @@ class App extends Component {
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
+    this.setState({ setHeight: height });
     return {
       leftCol: clarifaiFace.left_col * width,
       topRow: clarifaiFace.top_row * height,
@@ -83,49 +69,12 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageURL: this.state.input });
-    // app.models
-    //   .predict(
-
-    // ***** UNCOMMENT ABOVE ^^^
-    // HEADS UP! Sometimes the Clarifai Models can be down or not working as they are constantly getting updated.
-    // A good way to check if the model you are using is up, is to check them on the clarifai website. For example,
-    // for the Face Detect Mode: https://www.clarifai.com/models/face-detection
-    // If that isn't working, then that means you will have to wait until their servers are back up. Another solution
-    // is to use a different version of their model that works like the ones found here: https://github.com/Clarifai/clarifai-javascript/blob/master/src/index.js
-    // so you would change from:
-    // .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-    // to:
-    // .predict('53e1df302c079b3db8a0a36033ed2d15', this.state.input)
-
-      //   Clarifai.FACE_DETECT_MODEL,
-      //   this.state.input)
-      // .then(response => {
-      //   console.log('hi', response)
-      //   if (response) {
-      //     fetch('http://localhost:3000/image', {
-      //       method: 'put',
-      //       headers: {'Content-Type': 'application/json'},
-      //       body: JSON.stringify({
-      //         id: this.state.user.id
-      //       })
-      //     })
-      //       .then(response => response.json())
-      //       .then(count => {
-      //         this.setState(Object.assign(this.state.user, { entries: count}))
-      //       })
-
-      //   }
-      //   this.displayFaceBox(this.calculateFaceLocation(response))
-      // })
-      // .catch(err => console.log(err));
-
-
-      // **********************   LIVE WITH VID  *******************
-      app.models
-        .predict(
-          Clarifai.FACE_DETECT_MODEL,
-          this.state.input)
-        .then( response => {
+    app.models
+      .predict(
+        Clarifai.FACE_DETECT_MODEL,
+        this.state.input)
+      .then(response => {
+        if (response) {
           fetch('http://localhost:3000/image', {
             method: 'put',
             headers: {'Content-Type': 'application/json'},
@@ -133,18 +82,20 @@ class App extends Component {
               id: this.state.user.id
             })
           })
-          .then(response => response.json())
-          .then(count => {
-            this.setState(Object.assign(this.state.user, {entries: count}))
-          })
-          this.displayFaceBox(this.calculateFaceLocation(response))
-        })
-        .catch(err => console.log(err));
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, { entries: count}))
+            })
+
+        }
+        this.displayFaceBox(this.calculateFaceLocation(response))
+      })
+      .catch(err => console.log(err));
   }
 
   onRouteChange = (route) => {
     if (route === 'signout') {
-      this.setState({ isSignedIn: false })
+      this.setState({ isSignedIn: false, imageURL: '' })
     } else if (route === 'home') {
       this.setState({ isSignedIn: true });
     }
@@ -152,11 +103,27 @@ class App extends Component {
   }
 
   render() {
-    const { isSignedIn, route, imageURL, box, user } = this.state;
+    const { isSignedIn, route, imageURL, box, user, setHeight } = this.state;
+    let picHeight;
+    if (imageURL) {
+      picHeight = 100+(setHeight/10)+"%";
+    } else {
+      picHeight = '100%';
+    }
     const { onRouteChange, onInputChange, onButtonSubmit, loadUser } = this;
     return (
       <div className="App">
-        <ParticlesBg type='circle' className='particles' bg={true} />
+        <ParticlesBg
+          type="circle"
+          bg={{
+            position: "absolute",
+            width: 100+"%",
+            height: picHeight,
+            left: 0,
+            top: 0,
+            zIndex: -1
+          }}
+        />
         <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
         { route === 'home'
           ? 
